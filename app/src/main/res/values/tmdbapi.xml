@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="tmdb_schema">https</string>
+    <string name="tmdb_host">api.themoviedb.org</string>
+    <string name="tmdb_version">3</string>
+    <string name="tmdb_endpoint_discover">discover/movie</string>
+    <string name="tmdb_sortby">sort_by</string>
+    <string name="tmdb_sortby_popular">popularity.desc</string>
+    <string name="tmdb_sortby_highrated">vote_average.desc</string>
+    <string name="tmdb_apikey_key">api_key</string>
+</resources>
