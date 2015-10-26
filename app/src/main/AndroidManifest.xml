@@ -2,6 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="at.inclumedia.pop_m" >
 
+    <uses-permission android:name="android.permission.INTERNET" />
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -23,6 +25,14 @@
             android:label="@string/title_activity_movie_detail"
             android:parentActivityName=".MovieGridActivity"
             android:theme="@style/AppTheme.NoActionBar" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="at.inclumedia.pop_m.MovieGridActivity" />
+        </activity>
+        <activity
+            android:name=".MovieSettingsActivity"
+            android:label="@string/title_activity_movie_settings"
+            android:parentActivityName=".MovieGridActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="at.inclumedia.pop_m.MovieGridActivity" />

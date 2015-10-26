@@ -4,6 +4,7 @@ import android.content.Context;
 import android.net.Uri;
 import android.util.Log;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -34,13 +35,39 @@ public class TmdbAPI {
      */
     public static ArrayList<Movie> getMovies(int filter, Context context) {
         JSONObject moviesJSON = requestMovies(filter, context);
-        ArrayList<Movie> movies = getMoviesfromJSON(moviesJSON);
+        ArrayList<Movie> movies = getMoviesfromJSON(moviesJSON, context);
         return movies;
     }
 
-    private static ArrayList<Movie> getMoviesfromJSON(JSONObject json) {
-        // TODO: parse json
-        return null;
+    private static ArrayList<Movie> getMoviesfromJSON(JSONObject json, Context context) {
+        ArrayList<Movie> alMovies = new ArrayList<>();
+        try {
+            JSONArray arResults = json.getJSONArray(context.getString(R.string.tmdb_attrib_results));
+            for (int i=0; i<arResults.length(); i++) {
+                JSONObject objMovie = arResults.getJSONObject(i);
+                Movie movie = new Movie(
+                        objMovie.getString(context.getString(R.string.tmdb_attrib_title)),
+                        getThumbUri(objMovie.getString(context.getString(R.string.tmdb_attrib_poster)), context),
+                        objMovie.getString(context.getString(R.string.tmdb_attrib_overview)),
+                        objMovie.getDouble(context.getString(R.string.tmdb_attrib_rating)),
+                        objMovie.getString(context.getString(R.string.tmdb_attrib_date))
+                );
+                alMovies.add(movie);
+            }
+        }
+        catch (JSONException je) {
+            Log.e(LOG_TAG, "Error", je);
+        }
+        return alMovies;
+    }
+
+    private static Uri getThumbUri(String path, Context context) {
+        Uri.Builder builder = new Uri.Builder();
+        builder.scheme(context.getString(R.string.tmdb_schema))
+                .authority(context.getString(R.string.tmdb_host_image))
+                .appendEncodedPath(context.getString(R.string.tmdb_endpoint_image))
+                .appendEncodedPath(path);
+        return builder.build();
     }
 
     private static JSONObject requestMovies(int filterFlag, Context context) {
@@ -48,26 +75,24 @@ public class TmdbAPI {
         // construct API endpoint
         Uri.Builder builder = new Uri.Builder();
         builder.scheme(context.getString(R.string.tmdb_schema))
-                .authority(context.getString(R.string.tmdb_schema))
-                .appendPath(context.getString(R.string.tmdb_host))
+                .authority(context.getString(R.string.tmdb_host))
                 .appendPath(context.getString(R.string.tmdb_version))
                 .appendQueryParameter(context.getString(R.string.tmdb_apikey_key),
                                       context.getString(R.string.tmdb_apikey));
         switch (filterFlag) {
-            case 0: builder.appendPath(context.getString(R.string.tmdb_endpoint_discover));
+            case 0: builder.appendEncodedPath(context.getString(R.string.tmdb_endpoint_discover));
                     builder.appendQueryParameter(context.getString(R.string.tmdb_sortby),
                                                  context.getString(R.string.tmdb_sortby_popular));
                     break;
-            case 1: builder.appendPath(context.getString(R.string.tmdb_endpoint_discover));
+            case 1: builder.appendEncodedPath(context.getString(R.string.tmdb_endpoint_discover));
                     builder.appendQueryParameter(context.getString(R.string.tmdb_sortby),
                                                  context.getString(R.string.tmdb_sortby_highrated));
                     break;
-            default:builder.appendPath(context.getString(R.string.tmdb_endpoint_discover));
+            default:builder.appendEncodedPath(context.getString(R.string.tmdb_endpoint_discover));
                     builder.appendQueryParameter(context.getString(R.string.tmdb_sortby),
                                                  context.getString(R.string.tmdb_sortby_popular));
                     break;
         }
-        Log.v(LOG_TAG, "TheMovieDB API Request URL" + builder.toString());
 
         // make API call
         HttpURLConnection urlConnection = null;
