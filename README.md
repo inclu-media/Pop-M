@@ -21,4 +21,7 @@ Additional Features
 
 These features were implemented in addition to the required functionality:
 
-- 3 column layout in landscape mode
+- 3 column layout in landscape mode.
+- Movies as Parcelables and implementation of onSaveInstanceState.
+- The grid view acts as OnSharedPreferenceChangeListener and fetches new movies only at startup or
+  preferences change.

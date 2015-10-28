@@ -4,9 +4,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
+import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
-import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -15,9 +15,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.GridView;
-import android.widget.ListView;
 
 import java.util.ArrayList;
 
@@ -28,8 +26,59 @@ public class MovieGridActivityFragment extends Fragment {
 
     private static final String LOG_TAG = MovieGridActivityFragment.class.getSimpleName();
     private MovieAdapter mMovieAdapter;
+    private ArrayList<Movie> alMovies;
+
+    private SharedPreferences.OnSharedPreferenceChangeListener sortOrderListener =
+            new SharedPreferences.OnSharedPreferenceChangeListener() {
+                public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
+                    Log.v(LOG_TAG, "--- Event Received ---");
+
+                    // without checking isAdded it may crash -> Fragment not attached to Activity
+                    if (isAdded() && key.equals(getString(R.string.prefs_sortorder_key))) {
+                        Log.v(LOG_TAG, "--- Load Movies from TmDB ---");
+                        updateMovies();
+                    }
+                }
+            };
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        PreferenceManager.getDefaultSharedPreferences(getActivity().getApplicationContext())
+                         .registerOnSharedPreferenceChangeListener(sortOrderListener);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        // wanted to do this onPause but the listener still needs to be available when the
+        // settings activity is displayed (during which the fragment is paused).
+        PreferenceManager.getDefaultSharedPreferences(getActivity().getApplicationContext())
+                         .unregisterOnSharedPreferenceChangeListener(sortOrderListener);
+    }
 
     public MovieGridActivityFragment() {
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        if(savedInstanceState == null || !savedInstanceState.containsKey("movies")) {
+            Log.v(LOG_TAG, "--- Load Movies from TmDB ---");
+            alMovies = new ArrayList<>();
+            updateMovies();
+        }
+        else {
+            Log.v(LOG_TAG, "--- Load Movies from Bundle ---");
+            alMovies = savedInstanceState.getParcelableArrayList("movies");
+        }
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        outState.putParcelableArrayList("movies", alMovies);
+        super.onSaveInstanceState(outState);
     }
 
     @Override
@@ -43,9 +92,12 @@ public class MovieGridActivityFragment extends Fragment {
 
 
         // initialise custom ArrayAdapter for the grid view
-        mMovieAdapter = new MovieAdapter (getActivity(), R.layout.view_movie_image, R.id.view_movie_image);
+        mMovieAdapter = new MovieAdapter(getActivity(), alMovies);
         GridView movieGridView = (GridView) rootView.findViewById(R.id.movies_grid_view);
         movieGridView.setAdapter(mMovieAdapter);
+
+        // set number of columns)
+        movieGridView.setNumColumns(getActivity().getResources().getInteger(R.integer.num_columns));
 
         // define click listener for grid items
         movieGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -60,16 +112,9 @@ public class MovieGridActivityFragment extends Fragment {
                 detailIntent.putExtra("parcel_movie", movie);
                 startActivity(detailIntent);
             }
-
         });
 
         return rootView;
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
-        updateMovies();
     }
 
     @Override
@@ -104,8 +149,9 @@ public class MovieGridActivityFragment extends Fragment {
         protected void onPostExecute(ArrayList<Movie> movies) {
             super.onPostExecute(movies);
             if (movies != null) {
+                alMovies = movies;
                 mMovieAdapter.clear();
-                mMovieAdapter.addAll(movies);
+                mMovieAdapter.addAll(alMovies);
             }
         }
 

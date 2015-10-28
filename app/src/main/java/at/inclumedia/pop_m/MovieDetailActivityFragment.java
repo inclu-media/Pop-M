@@ -33,7 +33,7 @@ public class MovieDetailActivityFragment extends Fragment {
         // populate thumb
         // TODO: Add error and loading images for Picasso
         ImageView iconThumb = (ImageView) rootView.findViewById(R.id.imageView_thumb);
-        Picasso.with(getActivity()).load(movie.thumbUri).into(iconThumb);
+        Picasso.with(getActivity()).load(movie.thumbUri).fit().centerCrop().into(iconThumb);
 
         // populate release year
         TextView tvRel = (TextView) rootView.findViewById(R.id.textView_year);
