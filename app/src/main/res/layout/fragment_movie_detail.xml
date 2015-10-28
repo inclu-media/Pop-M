@@ -18,9 +18,10 @@
             android:textAppearance="?android:attr/textAppearanceLarge"
             android:text="Large Text"
             android:id="@+id/textView_title"
-            android:background="@color/colorPrimary"
+            android:background="@color/colorAccent"
             android:paddingLeft="15dp"
-            android:paddingTop="30dp" />
+            android:paddingTop="35dp"
+            android:textColor="@color/colorPrimaryDark"/>
 
         <LinearLayout
             android:orientation="horizontal"

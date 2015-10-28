@@ -16,6 +16,8 @@ import com.squareup.picasso.Picasso;
  */
 public class MovieDetailActivityFragment extends Fragment {
 
+    private static final String LOG_TAG = MovieDetailActivityFragment.class.getSimpleName();
+
     public MovieDetailActivityFragment() {
     }
 
@@ -31,9 +33,8 @@ public class MovieDetailActivityFragment extends Fragment {
         tvTitle.setText(movie.title);
 
         // populate thumb
-        // TODO: Add error and loading images for Picasso
         ImageView iconThumb = (ImageView) rootView.findViewById(R.id.imageView_thumb);
-        Picasso.with(getActivity()).load(movie.thumbUri).fit().centerCrop().into(iconThumb);
+        Picasso.with(getActivity()).load(movie.thumbUri).fit().error(R.drawable.notfound).centerCrop().into(iconThumb);
 
         // populate release year
         TextView tvRel = (TextView) rootView.findViewById(R.id.textView_year);

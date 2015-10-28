@@ -13,7 +13,7 @@ import java.util.ArrayList;
 
 
 /**
- * Created by boehni on 25/10/15.
+ * Created by Martin Melcher on 25/10/15.
  */
 public class MovieAdapter extends ArrayAdapter<Movie> {
 
@@ -29,10 +29,8 @@ public class MovieAdapter extends ArrayAdapter<Movie> {
         if (convertView == null) {
             convertView = LayoutInflater.from(getContext()).inflate(R.layout.view_movie_image, parent, false);
         }
-
-        // TODO: Add error and loading images for Picasso
         ImageView iconThumb = (ImageView) convertView.findViewById(R.id.view_movie_image);
-        Picasso.with(parent.getContext()).load(movie.thumbUri).into(iconThumb);
+        Picasso.with(parent.getContext()).load(movie.thumbUri).error(R.drawable.notfound).into(iconThumb);
 
         return convertView;
     }

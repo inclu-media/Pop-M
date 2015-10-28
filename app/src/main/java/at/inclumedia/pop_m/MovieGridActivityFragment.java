@@ -7,7 +7,6 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -31,11 +30,9 @@ public class MovieGridActivityFragment extends Fragment {
     private SharedPreferences.OnSharedPreferenceChangeListener sortOrderListener =
             new SharedPreferences.OnSharedPreferenceChangeListener() {
                 public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
-                    Log.v(LOG_TAG, "--- Event Received ---");
 
                     // without checking isAdded it may crash -> Fragment not attached to Activity
                     if (isAdded() && key.equals(getString(R.string.prefs_sortorder_key))) {
-                        Log.v(LOG_TAG, "--- Load Movies from TmDB ---");
                         updateMovies();
                     }
                 }
@@ -65,12 +62,10 @@ public class MovieGridActivityFragment extends Fragment {
         super.onCreate(savedInstanceState);
 
         if(savedInstanceState == null || !savedInstanceState.containsKey("movies")) {
-            Log.v(LOG_TAG, "--- Load Movies from TmDB ---");
             alMovies = new ArrayList<>();
             updateMovies();
         }
         else {
-            Log.v(LOG_TAG, "--- Load Movies from Bundle ---");
             alMovies = savedInstanceState.getParcelableArrayList("movies");
         }
     }
@@ -157,8 +152,7 @@ public class MovieGridActivityFragment extends Fragment {
 
         @Override
         protected ArrayList<Movie> doInBackground(Integer ... filters) {
-            ArrayList<Movie> alMovies = TmdbAPI.getMovies(filters[0], getContext());
-            return alMovies;
+            return TmdbAPI.getMovies(filters[0], getContext());
         }
     }
 }

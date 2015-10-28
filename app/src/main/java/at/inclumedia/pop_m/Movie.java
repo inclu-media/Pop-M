@@ -4,10 +4,8 @@ import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import java.util.Date;
-
 /**
- * Created by boehni on 23/10/15.
+ * Created by Martin Melcher on 23/10/15.
  */
 public class Movie implements Parcelable {
 

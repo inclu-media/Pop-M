@@ -7,7 +7,7 @@ import android.preference.PreferenceActivity;
 import android.preference.PreferenceManager;
 
 /**
- * Created by boehni on 26/10/15.
+ * Created by Martin Melcher on 26/10/15.
  */
 public class MovieSettingsActivity extends PreferenceActivity
                                    implements Preference.OnPreferenceChangeListener {
