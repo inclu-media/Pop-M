@@ -6,4 +6,6 @@
     <string name="prefs_sortorder_label">Sort movies by</string>
     <string name="prefs_sortorder_default">0</string>
     <string name="title_activity_movie_settings">Settings</string>
+    <string name="fav_added">Movie added to Favourites</string>
+    <string name="fav_removed">Movie removed from Favourites</string>
 </resources>

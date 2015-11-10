@@ -17,4 +17,13 @@
     <string name="tmdb_attrib_rating">vote_average</string>
     <string name="tmdb_attrib_date">release_date</string>
     <string name="tmdb_maxrating">10</string>
+    <string name="tmdb_review_author">author</string>
+    <string name="tmdb_review_content">content</string>
+    <string name="tmdb_trailer_type">type</string>
+    <string name="tmdb_trailer_name">name</string>
+    <string name="tmdb_trailer_key">key</string>
+    <string name="tmdb_trailer_host">youtu.be</string>
+    <string name="tmdb_endpoint_movie">movie</string>
+    <string name="tmdb_endpoint_movie_trailers">videos</string>
+    <string name="tmdb_endpoint_movie_reviews">reviews</string>
 </resources>

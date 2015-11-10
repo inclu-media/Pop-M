@@ -37,6 +37,10 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="at.inclumedia.pop_m.MovieGridActivity" />
         </activity>
+        <provider
+            android:authorities="at.inclumedia.pop_m"
+            android:exported="false"
+            android:name="at.inclumedia.pop_m.data.generated.MovieProvider"/>
     </application>
 
 </manifest>

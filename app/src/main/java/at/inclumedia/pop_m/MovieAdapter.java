@@ -1,37 +1,42 @@
 package at.inclumedia.pop_m;
 
-import android.app.Activity;
+import android.content.Context;
+import android.database.Cursor;
+import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
+import android.widget.CursorAdapter;
 import android.widget.ImageView;
 
 import com.squareup.picasso.Picasso;
 
-import java.util.ArrayList;
+import butterknife.Bind;
+import butterknife.ButterKnife;
 
 
 /**
  * Created by Martin Melcher on 25/10/15.
  */
-public class MovieAdapter extends ArrayAdapter<Movie> {
+public class MovieAdapter extends CursorAdapter {
 
-    private static final String LOG_TAG = MovieAdapter.class.getSimpleName();
+    @Bind(R.id.view_movie_image) ImageView iconThumb;
 
-    public MovieAdapter(Activity context, ArrayList<Movie> alMovies) {
-        super(context, 0, alMovies);
+    public MovieAdapter(Context context, Cursor c, int flags) {
+        super(context, c, flags);
     }
 
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
-        Movie movie = getItem(position);
-        if (convertView == null) {
-            convertView = LayoutInflater.from(getContext()).inflate(R.layout.view_movie_image, parent, false);
-        }
-        ImageView iconThumb = (ImageView) convertView.findViewById(R.id.view_movie_image);
-        Picasso.with(parent.getContext()).load(movie.thumbUri).error(R.drawable.notfound).into(iconThumb);
-
-        return convertView;
+    public View newView(Context context, Cursor cursor, ViewGroup parent) {
+        View view = LayoutInflater.from(context).inflate(R.layout.view_movie_image, parent, false);
+        return view;
     }
+
+    @Override
+    public void bindView(View view, Context context, Cursor cursor) {
+        ButterKnife.bind(this, view);
+        Uri thumbUri = Uri.parse(cursor.getString(MovieGridActivityFragment.COL_MOVIE_THUMBURI));
+        Picasso.with(context).load(thumbUri).error(R.drawable.ic_av_movie).into(iconThumb);
+    }
+
 }

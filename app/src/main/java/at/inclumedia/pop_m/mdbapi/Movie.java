@@ -1,4 +1,4 @@
-package at.inclumedia.pop_m;
+package at.inclumedia.pop_m.mdbapi;
 
 import android.net.Uri;
 import android.os.Parcel;
@@ -9,18 +9,20 @@ import android.os.Parcelable;
  */
 public class Movie implements Parcelable {
 
-    String title;
-    Uri thumbUri;
-    String plot;
-    double rating;
-    String releaseDate;
+    public String title;
+    public Uri thumbUri;
+    public String plot;
+    public double rating;
+    public String releaseDate;
+    public int mdbId;
 
-    public Movie(String title, Uri thumbUri, String plot, double rating, String releaseDate) {
+    public Movie(String title, Uri thumbUri, String plot, double rating, String releaseDate, int mdbId) {
         this.title = title;
         this.thumbUri = thumbUri;
         this.plot = plot;
         this.rating = rating;
         this.releaseDate = releaseDate;
+        this.mdbId = mdbId;
     }
 
     @Override
@@ -35,6 +37,7 @@ public class Movie implements Parcelable {
         dest.writeString(plot);
         dest.writeDouble(rating);
         dest.writeString(releaseDate);
+        dest.writeInt(mdbId);
     }
 
     public static final Parcelable.Creator<Movie> CREATOR
@@ -54,5 +57,6 @@ public class Movie implements Parcelable {
         plot        = in.readString();
         rating      = in.readDouble();
         releaseDate = in.readString();
+        mdbId       = in.readInt();
     }
 }

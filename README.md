@@ -16,12 +16,15 @@ Ths content of the file should look like this:
 </resources>
 ```
 
-Additional Features
--------------------
-
-These features were implemented in addition to the required functionality:
+Additional Features Version 1
+-----------------------------
 
 - 3 column layout in landscape mode.
 - Movies as Parcelables and implementation of onSaveInstanceState.
 - The grid view acts as OnSharedPreferenceChangeListener and fetches new movies only at startup or
   preferences change.
+  
+Additional Features Version 2
+-----------------------------
+
+- ButterKnife
