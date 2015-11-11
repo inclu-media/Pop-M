@@ -26,4 +26,7 @@
     <string name="tmdb_endpoint_movie">movie</string>
     <string name="tmdb_endpoint_movie_trailers">videos</string>
     <string name="tmdb_endpoint_movie_reviews">reviews</string>
+    <string name="tmdb_trailer_imghost">img.youtube.com</string>
+    <string name="tmdb_trailer_path">vi</string>
+    <string name="tmdb_trailer_file">default.jpg</string>
 </resources>

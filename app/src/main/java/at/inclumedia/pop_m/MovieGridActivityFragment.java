@@ -183,7 +183,7 @@ public class MovieGridActivityFragment extends Fragment implements LoaderManager
         setHasOptionsMenu(true);
 
         // create adapters
-        mMoviesAdapter   = new MovieAdapter(getActivity(), null, 0);
+        mMoviesAdapter = new MovieAdapter(getActivity(), null, 0);
         movieGridView.setAdapter(mMoviesAdapter);
 
         // set number of columns

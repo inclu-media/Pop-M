@@ -13,6 +13,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -39,7 +41,8 @@ public class MovieDetailActivityFragment extends Fragment implements LoaderManag
     private static final String LOG_TAG = MovieDetailActivityFragment.class.getSimpleName();
 
     private int mMovieId = -1;
-    private boolean mIsFavourite = false;
+    private TrailerAdapter mTrailerAdapter;
+    private ReviewAdapter mReviewAdapter;
 
     // loader
     private static final int DATA_LOADER = 0;
@@ -56,28 +59,28 @@ public class MovieDetailActivityFragment extends Fragment implements LoaderManag
             MovieColumns.PLOT,
             MovieColumns.IS_FAVOURITE
     };
-    private static final int COL_MOVIE_TITLE = 1;
-    private static final int COL_MOVIE_RELDATE = 2;
-    private static final int COL_MOVIE_RATING = 3;
-    private static final int COL_MOVIE_THUMBURL = 4;
-    private static final int COL_MOVIE_PLOT = 5;
-    private static final int COL_MOVIE_ISFAVOURITE = 6;
+    static final int COL_MOVIE_TITLE = 1;
+    static final int COL_MOVIE_RELDATE = 2;
+    static final int COL_MOVIE_RATING = 3;
+    static final int COL_MOVIE_THUMBURL = 4;
+    static final int COL_MOVIE_PLOT = 5;
+    static final int COL_MOVIE_ISFAVOURITE = 6;
 
     private static final String[] TRAILER_COLUMNS = {
             TrailerColumns._ID,
             TrailerColumns.NAME,
             TrailerColumns.YOUTUBE_URL
     };
-    private static final int COL_TRAILER_NAME = 1;
-    private static final int COL_TRAILER_YOUTUBEURL = 2;
+    static final int COL_TRAILER_NAME = 1;
+    static final int COL_TRAILER_YOUTUBEURL = 2;
 
     private static final String[] REVIEW_COLUMNS = {
             ReviewColumns._ID,
             ReviewColumns.AUTHOR,
             ReviewColumns.CONTENT
     };
-    private static final int COL_REVIEW_AUTHOR = 1;
-    private static final int COL_REVIEW_CONTENT = 2;
+    static final int COL_REVIEW_AUTHOR = 1;
+    static final int COL_REVIEW_CONTENT = 2;
 
     @Bind(R.id.textView_title) TextView tvTitle;
     @Bind(R.id.imageView_thumb) ImageView iconThumb;
@@ -86,6 +89,9 @@ public class MovieDetailActivityFragment extends Fragment implements LoaderManag
     @Bind(R.id.textView_plot) TextView tvPlot;
     @Bind(R.id.fabPlus) FloatingActionButton fabPlus;
     @Bind(R.id.fabMinus) FloatingActionButton fabMinus;
+    @Bind(R.id.layout_trailers) LinearLayout lTrailers;
+    @Bind(R.id.layout_reviews) LinearLayout lReviews;
+    @Bind(R.id.scrollView_details) ScrollView svDetails;
 
     public MovieDetailActivityFragment() {
     }
@@ -154,7 +160,7 @@ public class MovieDetailActivityFragment extends Fragment implements LoaderManag
                         getActivity(),
                         MovieProvider.Trailers.forMovie(mMovieId),
                         TRAILER_COLUMNS,
-                        null, null, null);
+                        null, null, COL_TRAILER_NAME + " ASC");
                 break;
             case REVIEW_LOADER:
                 if (mMovieId == -1) {
@@ -195,17 +201,23 @@ public class MovieDetailActivityFragment extends Fragment implements LoaderManag
                 }
                 break;
             case TRAILER_LOADER:
-                // TODO: <ArrayListAdapter> TrailerAdapter.swapCursor(cursor);
+                mTrailerAdapter.swapCursor(cursor);
+                lTrailers.removeAllViewsInLayout();
+                for (int i=0; i<mTrailerAdapter.getCount(); i++) {
+                    lTrailers.addView(mTrailerAdapter.getView(i, null, lTrailers));
+                }
                 break;
             case REVIEW_LOADER:
-                // TODO: <ArrayListAdapter> PreviewAdapter.swapCursor(cursor);
+                // TODO: mReviewAdapter.swapCursor(cursor);
                 break;
         }
+        svDetails.scrollTo(0, 0); // move back up after adding things
     }
 
     @Override
     public void onLoaderReset(Loader<Cursor> cursorLoader) {
-        // mMovieAdapter.swapCursor(null);
+        mTrailerAdapter.swapCursor(null);
+        // TODO: mReviewAdapter.swapCursor(null);
     }
 
     @Override
@@ -213,6 +225,13 @@ public class MovieDetailActivityFragment extends Fragment implements LoaderManag
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_movie_detail, container, false);
         ButterKnife.bind(this, rootView);
+
+        // create adapters
+        mTrailerAdapter   = new TrailerAdapter(getActivity(), null, 0);
+        // lvTrailers.setAdapter(mTrailerAdapter);
+        // TODO: mReviewAdapter = new ReviewAdapter(getActivity(), null, 0);
+        // TODO: lvReviews.setAdapter(mReviewAdapter);
+
         return rootView;
     }
 
