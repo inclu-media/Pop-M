@@ -20,7 +20,7 @@ import butterknife.ButterKnife;
 
 
 /**
- * Created by boehni on 10/11/15.
+ * Created by Martin Melcher on 10/11/15.
  */
 public class TrailerAdapter extends CursorAdapter {
 

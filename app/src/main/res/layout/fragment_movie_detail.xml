@@ -76,12 +76,21 @@
                 android:paddingRight="15dp"
                 android:paddingBottom="15dp" />
 
+            <View
+                android:layout_width="fill_parent"
+                android:layout_height="1dp"
+                android:background="#c0c0c0"
+                android:id="@+id/view_trailer_divider"/>
+
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textAppearance="?android:attr/textAppearanceMedium"
-                android:text="Medium Text"
-                android:id="@+id/textView_trailer_heading" />
+                android:text="@string/popm_movie_trailers"
+                android:id="@+id/textView_trailer_heading"
+                android:layout_marginLeft="16dp"
+                android:layout_marginBottom="10dp"
+                android:layout_marginTop="5dp" />
 
             <LinearLayout
                 android:layout_height="wrap_content"
@@ -90,12 +99,21 @@
                 android:orientation="vertical">
             </LinearLayout>
 
+            <View
+                android:layout_width="fill_parent"
+                android:layout_height="1dp"
+                android:background="#c0c0c0"
+                android:id="@+id/view_review_divider"/>
+
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textAppearance="?android:attr/textAppearanceMedium"
-                android:text="Medium Text"
-                android:id="@+id/textView_reviews_heading" />
+                android:text="@string/popm_movie_reviews"
+                android:id="@+id/textView_reviews_heading"
+                android:layout_marginLeft="16dp"
+                android:layout_marginBottom="10dp"
+                android:layout_marginTop="5dp" />
 
             <LinearLayout
                 android:layout_height="wrap_content"

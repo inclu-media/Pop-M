@@ -1,13 +1,20 @@
 package at.inclumedia.pop_m;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -20,6 +27,7 @@ import android.widget.GridView;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.support.v4.content.CursorLoader;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 
@@ -30,10 +38,7 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnItemClick;
 
-/**
- * A placeholder fragment containing a simple view.
- */
-public class MovieGridActivityFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
+public class MovieGridActivityFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>, SwipeRefreshLayout.OnRefreshListener {
 
     private static final String LOG_TAG = MovieGridActivityFragment.class.getSimpleName();
     private static final int SHOW_POPULAR = 0;
@@ -56,6 +61,7 @@ public class MovieGridActivityFragment extends Fragment implements LoaderManager
     static final int COL_MOVIE_ID = 0;
     static final int COL_MOVIE_THUMBURI = 1;
 
+    @Bind(R.id.movie_grid_refresh_layout) SwipeRefreshLayout srlGrid;
     @Bind(R.id.movies_grid_view) GridView movieGridView;
 
     @OnItemClick(R.id.movies_grid_view)
@@ -84,6 +90,7 @@ public class MovieGridActivityFragment extends Fragment implements LoaderManager
                     if (isAdded() && key.equals(getString(R.string.prefs_sortorder_key))) {
                         int value = Integer.parseInt(prefs.getString(key, getString(R.string.prefs_sortorder_default)));
                         MovieGridActivityFragment.this.currentlyShown = value;
+                        MovieGridActivityFragment.this.setSubTitle();
                         MovieGridActivityFragment.this.getLoaderManager().restartLoader(
                                 value,
                                 null,
@@ -100,13 +107,12 @@ public class MovieGridActivityFragment extends Fragment implements LoaderManager
         super.onResume();
         PreferenceManager.getDefaultSharedPreferences(getActivity().getApplicationContext())
                          .registerOnSharedPreferenceChangeListener(sortOrderListener);
+        setSubTitle();
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        // wanted to do this onPause but the listener still needs to be available when the
-        // settings activity is displayed (during which the fragment is paused).
         PreferenceManager.getDefaultSharedPreferences(getActivity().getApplicationContext())
                          .unregisterOnSharedPreferenceChangeListener(sortOrderListener);
     }
@@ -150,7 +156,6 @@ public class MovieGridActivityFragment extends Fragment implements LoaderManager
         if (cursorLoader.getId() == currentlyShown) {
             mMoviesAdapter.swapCursor(cursor);
         }
-        cursorLoader.abandon(); // stop onLoadFinished from firing multiple times
     }
 
     @Override
@@ -162,14 +167,28 @@ public class MovieGridActivityFragment extends Fragment implements LoaderManager
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // pull movies via api into db
-        // TODO: check for internet connection
-        updateMovies();
+        // pull movies via api into db if the db is empty
+        Cursor c = getActivity().getContentResolver().query(MovieProvider.Movies.ALL,
+                                                            MOVIE_COLUMNS, null, null, null);
+        if (c.getCount() < 20) {
+            updateMovies();
+        }
 
         // initialise what's to be shown
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getActivity().getApplicationContext());
         String sFilter = sharedPref.getString(getString(R.string.prefs_sortorder_key), getString(R.string.prefs_sortorder_default));
         currentlyShown = Integer.parseInt(sFilter);
+    }
+
+    @Override
+    public void onRefresh() {
+        updateMovies();
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                srlGrid.setRefreshing(false);
+            }
+        }, 3000);
     }
 
     @Override
@@ -190,8 +209,12 @@ public class MovieGridActivityFragment extends Fragment implements LoaderManager
         // could work with auto_fit here but this would give me only 2 columns in landscape on a mobile
         movieGridView.setNumColumns(getActivity().getResources().getInteger(R.integer.num_columns));
 
+        // set listener for swipe refresh layout
+        srlGrid.setOnRefreshListener(this);
+
         return rootView;
     }
+
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
@@ -212,9 +235,32 @@ public class MovieGridActivityFragment extends Fragment implements LoaderManager
         return super.onOptionsItemSelected(item);
     }
 
+    private void setSubTitle() {
+        ActionBar ab =  ((AppCompatActivity)getActivity()).getSupportActionBar();
+        switch(currentlyShown) {
+            case SHOW_POPULAR:
+                ab.setSubtitle(getString(R.string.popm_movie_popular));
+                break;
+            case SHOW_HIRATED:
+                ab.setSubtitle(getString(R.string.popm_movie_hirated));
+                break;
+            case SHOW_FAVOURITE:
+                ab.setSubtitle(getString(R.string.popm_movie_favourite));
+                break;
+        }
+    }
+
     private void updateMovies() {
-        FetchMoviesTask fmt = new FetchMoviesTask();
-        fmt.execute(0);
+        ConnectivityManager connectivityManager = (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        if (activeNetworkInfo != null && activeNetworkInfo.isConnected()) {
+            FetchMoviesTask fmt = new FetchMoviesTask();
+            fmt.execute(0);
+            Log.d(LOG_TAG, "Refreshing movies from themoviedb.org");
+        }
+        else {
+            Toast.makeText(getContext(), getString(R.string.popm_msg_noin), Toast.LENGTH_LONG).show();
+        }
     }
 
     public class FetchMoviesTask extends AsyncTask<Integer, Void, Void> {

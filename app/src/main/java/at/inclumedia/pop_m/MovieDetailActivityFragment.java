@@ -9,7 +9,12 @@ import android.os.Bundle;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.support.v4.view.MenuItemCompat;
+import android.support.v7.widget.ShareActionProvider;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -20,22 +25,17 @@ import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 
-import net.simonvt.schematic.annotation.DataType;
-
 import at.inclumedia.pop_m.data.MovieColumns;
 import at.inclumedia.pop_m.data.MovieProvider;
 import at.inclumedia.pop_m.data.ReviewColumns;
 import at.inclumedia.pop_m.data.TrailerColumns;
-import at.inclumedia.pop_m.mdbapi.Movie;
+
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 import com.github.clans.fab.FloatingActionButton;
 
-/**
- * A placeholder fragment containing a simple view.
- */
 public class MovieDetailActivityFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
 
     private static final String LOG_TAG = MovieDetailActivityFragment.class.getSimpleName();
@@ -43,6 +43,10 @@ public class MovieDetailActivityFragment extends Fragment implements LoaderManag
     private int mMovieId = -1;
     private TrailerAdapter mTrailerAdapter;
     private ReviewAdapter mReviewAdapter;
+    private ShareActionProvider mShareActionProvider;
+    private String mTitle = null;
+    private String mYouTubeUrl = null;
+
 
     // loader
     private static final int DATA_LOADER = 0;
@@ -92,6 +96,10 @@ public class MovieDetailActivityFragment extends Fragment implements LoaderManag
     @Bind(R.id.layout_trailers) LinearLayout lTrailers;
     @Bind(R.id.layout_reviews) LinearLayout lReviews;
     @Bind(R.id.scrollView_details) ScrollView svDetails;
+    @Bind(R.id.textView_trailer_heading) TextView tvTrailerHeading;
+    @Bind(R.id.textView_reviews_heading) TextView tvReviewHeading;
+    @Bind(R.id.view_trailer_divider) View vTrailerDivider;
+    @Bind(R.id.view_review_divider) View vReviewDivider;
 
     public MovieDetailActivityFragment() {
     }
@@ -170,7 +178,7 @@ public class MovieDetailActivityFragment extends Fragment implements LoaderManag
                         getActivity(),
                         MovieProvider.Reviews.forMovie(mMovieId),
                         REVIEW_COLUMNS,
-                        null, null, null);
+                        null, null, COL_REVIEW_AUTHOR + " ASC");
                 break;
         }
         return cl;
@@ -193,7 +201,8 @@ public class MovieDetailActivityFragment extends Fragment implements LoaderManag
                     }
 
                     // fill UI
-                    tvTitle.setText(cursor.getString(COL_MOVIE_TITLE));
+                    mTitle = cursor.getString(COL_MOVIE_TITLE);
+                    tvTitle.setText(mTitle);
                     Picasso.with(getActivity()).load(cursor.getString(COL_MOVIE_THUMBURL)).fit().error(R.drawable.ic_av_movie).centerCrop().into(iconThumb);
                     tvRel.setText(getReleaseYear(cursor.getString(COL_MOVIE_RELDATE)));
                     tvRating.setText(getRatingString(cursor.getDouble(COL_MOVIE_RATING)));
@@ -201,23 +210,51 @@ public class MovieDetailActivityFragment extends Fragment implements LoaderManag
                 }
                 break;
             case TRAILER_LOADER:
-                mTrailerAdapter.swapCursor(cursor);
-                lTrailers.removeAllViewsInLayout();
-                for (int i=0; i<mTrailerAdapter.getCount(); i++) {
-                    lTrailers.addView(mTrailerAdapter.getView(i, null, lTrailers));
+                if (cursor.getCount() > 0) {
+                    mTrailerAdapter.swapCursor(cursor);
+                    lTrailers.removeAllViewsInLayout();
+                    tvTrailerHeading.setVisibility(View.VISIBLE);
+                    lTrailers.setVisibility(View.VISIBLE);
+                    vTrailerDivider.setVisibility(View.VISIBLE);
+                    for (int i = 0; i < mTrailerAdapter.getCount(); i++) {
+                        lTrailers.addView(mTrailerAdapter.getView(i, null, lTrailers));
+                    }
+                    cursor.moveToFirst();
+                    mYouTubeUrl = cursor.getString(COL_TRAILER_YOUTUBEURL);
+                }
+                else {
+                    tvTrailerHeading.setVisibility(View.GONE);
+                    lTrailers.setVisibility(View.GONE);
+                    vTrailerDivider.setVisibility(View.GONE);
+                    mYouTubeUrl = null;
                 }
                 break;
             case REVIEW_LOADER:
-                // TODO: mReviewAdapter.swapCursor(cursor);
+                if (cursor.getCount() > 0) {
+                    mReviewAdapter.swapCursor(cursor);
+                    lReviews.removeAllViewsInLayout();
+                    tvReviewHeading.setVisibility(View.VISIBLE);
+                    lReviews.setVisibility(View.VISIBLE);
+                    vReviewDivider.setVisibility(View.VISIBLE);
+                    for (int i = 0; i < mReviewAdapter.getCount(); i++) {
+                        lReviews.addView(mReviewAdapter.getView(i, null, lReviews));
+                    }
+                }
+                else {
+                    tvReviewHeading.setVisibility(View.GONE);
+                    lReviews.setVisibility(View.GONE);
+                    vReviewDivider.setVisibility(View.GONE);
+                }
                 break;
         }
-        svDetails.scrollTo(0, 0); // move back up after adding things
+        // now that everything is loaded
+        setShareIntent();
     }
 
     @Override
     public void onLoaderReset(Loader<Cursor> cursorLoader) {
         mTrailerAdapter.swapCursor(null);
-        // TODO: mReviewAdapter.swapCursor(null);
+        mReviewAdapter.swapCursor(null);
     }
 
     @Override
@@ -226,15 +263,23 @@ public class MovieDetailActivityFragment extends Fragment implements LoaderManag
         View rootView = inflater.inflate(R.layout.fragment_movie_detail, container, false);
         ButterKnife.bind(this, rootView);
 
+        // enable menu
+        setHasOptionsMenu(true);
+
         // create adapters
         mTrailerAdapter   = new TrailerAdapter(getActivity(), null, 0);
-        // lvTrailers.setAdapter(mTrailerAdapter);
-        // TODO: mReviewAdapter = new ReviewAdapter(getActivity(), null, 0);
-        // TODO: lvReviews.setAdapter(mReviewAdapter);
+        mReviewAdapter = new ReviewAdapter(getActivity(), null, 0);
 
         return rootView;
     }
 
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.menu_movie_detail, menu);
+
+        MenuItem menuItem = menu.findItem(R.id.menu_item_share);
+        mShareActionProvider = (ShareActionProvider) MenuItemCompat.getActionProvider(menuItem);
+    }
 
     private String getReleaseYear(String releaseDate) {
         String[] parts = releaseDate.split("-");
@@ -244,5 +289,22 @@ public class MovieDetailActivityFragment extends Fragment implements LoaderManag
     private String getRatingString(Double rating) {
         String sRat = Double.toString(rating);
         return sRat + "/" + getString(R.string.tmdb_maxrating);
+    }
+
+    private void setShareIntent() {
+        String msg  = getString(R.string.popm_share_discover) +" \"";
+               msg += mTitle +"\" "+  getString(R.string.popm_share_popm) + ".";
+        if (mYouTubeUrl != null) {
+            msg += " " + getString(R.string.popm_share_trailer) +": "+ mYouTubeUrl;
+        }
+
+        Intent intent = new Intent();
+        intent.setAction(Intent.ACTION_SEND);
+        intent.putExtra(Intent.EXTRA_TEXT, msg);
+        intent.setType("text/plain");
+
+        if (mShareActionProvider != null) {
+            mShareActionProvider.setShareIntent(intent);
+        }
     }
 }

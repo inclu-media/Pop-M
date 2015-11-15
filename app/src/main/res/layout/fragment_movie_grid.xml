@@ -1,10 +1,11 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.v4.widget.SwipeRefreshLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
     tools:showIn="@layout/activity_movie_grid"
-    tools:context=".MovieGridActivityFragment">
-
+    tools:context=".MovieGridActivityFragment"
+    android:id="@+id/movie_grid_refresh_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
 
     <GridView
         android:layout_width="match_parent"
@@ -15,4 +16,4 @@
         android:verticalSpacing="0dp"
         android:horizontalSpacing="0dp" />
 
-</FrameLayout>
+</android.support.v4.widget.SwipeRefreshLayout>

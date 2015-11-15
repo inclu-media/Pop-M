@@ -17,7 +17,7 @@ import at.inclumedia.pop_m.mdbapi.Review;
 import at.inclumedia.pop_m.mdbapi.Trailer;
 
 /**
- * Created by boehni on 08/11/15.
+ * Created by Martin Melcher on 08/11/15.
  */
 public class MovieStoreManager {
 
@@ -57,14 +57,6 @@ public class MovieStoreManager {
 
     public void updateReviewsForMovie(int movieId) {
         new FetchExtrasTask().execute(REVIEWS, movieId);
-    }
-
-    public void addToFavouriteMovies(int movieId) {
-        // TODO: implement
-    }
-
-    public void removeFromFavouriteMovies(int movieId) {
-        // TODO: implement
     }
 
     private void updateExtras(int flag, int movieId) {
