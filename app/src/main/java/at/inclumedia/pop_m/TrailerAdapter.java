@@ -26,9 +26,15 @@ public class TrailerAdapter extends CursorAdapter {
 
     private static final String LOG_TAG = TrailerAdapter.class.getSimpleName();
 
-    @Bind(R.id.imageView_youtube_thumb) ImageView ivYoutube;
-    @Bind(R.id.textView_trailer_title) TextView tvHeading;
-    @Bind(R.id.imageButton_play) ImageButton ibPlay;
+    public static class ViewHolder {
+        @Bind(R.id.imageView_youtube_thumb) ImageView ivYoutube;
+        @Bind(R.id.textView_trailer_title) TextView tvHeading;
+        @Bind(R.id.imageButton_play) ImageButton ibPlay;
+
+        public ViewHolder(View view) {
+            ButterKnife.bind(this, view);
+        }
+    }
 
     public TrailerAdapter(Context context, Cursor c, int flags) {
         super(context, c, flags);
@@ -37,14 +43,18 @@ public class TrailerAdapter extends CursorAdapter {
     @Override
     public View newView(Context context, Cursor cursor, ViewGroup parent) {
         View view = LayoutInflater.from(context).inflate(R.layout.view_movie_trailer, parent, false);
+
+        ViewHolder viewHolder = new ViewHolder(view);
+        view.setTag(viewHolder);
+
         return view;
     }
 
     @Override
     public void bindView(View view, Context context, Cursor cursor) {
-        ButterKnife.bind(this, view);
+        ViewHolder viewHolder = (ViewHolder) view.getTag();
 
-        tvHeading.setText(cursor.getString(MovieDetailActivityFragment.COL_TRAILER_NAME));
+        viewHolder.tvHeading.setText(cursor.getString(MovieDetailActivityFragment.COL_TRAILER_NAME));
 
         // get youtube preview image and display
         final String youTubeUrl = cursor.getString(MovieDetailActivityFragment.COL_TRAILER_YOUTUBEURL);
@@ -56,10 +66,10 @@ public class TrailerAdapter extends CursorAdapter {
                 .appendEncodedPath(youTubeUri.getLastPathSegment())
                 .appendEncodedPath(context.getString(R.string.tmdb_trailer_file));
         Uri youTubeThumbUri = builder.build();
-        Picasso.with(context).load(youTubeThumbUri).fit().centerCrop().into(ivYoutube);
+        Picasso.with(context).load(youTubeThumbUri).fit().centerCrop().into(viewHolder.ivYoutube);
 
         // youtube intent
-        ibPlay.setOnClickListener(new View.OnClickListener() {
+        viewHolder.ibPlay.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 fireTube(youTubeUri, view);

@@ -20,7 +20,13 @@ import butterknife.ButterKnife;
  */
 public class MovieAdapter extends CursorAdapter {
 
-    @Bind(R.id.view_movie_image) ImageView iconThumb;
+    public static class ViewHolder {
+        @Bind(R.id.view_movie_image) ImageView iconThumb;
+
+        public ViewHolder(View view) {
+            ButterKnife.bind(this, view);
+        }
+    }
 
     public MovieAdapter(Context context, Cursor c, int flags) {
         super(context, c, flags);
@@ -29,14 +35,19 @@ public class MovieAdapter extends CursorAdapter {
     @Override
     public View newView(Context context, Cursor cursor, ViewGroup parent) {
         View view = LayoutInflater.from(context).inflate(R.layout.view_movie_image, parent, false);
+
+        ViewHolder viewHolder = new ViewHolder(view);
+        view.setTag(viewHolder);
+
         return view;
     }
 
     @Override
     public void bindView(View view, Context context, Cursor cursor) {
-        ButterKnife.bind(this, view);
+        ViewHolder viewHolder = (ViewHolder) view.getTag();
+
         Uri thumbUri = Uri.parse(cursor.getString(MovieGridActivityFragment.COL_MOVIE_THUMBURI));
-        Picasso.with(context).load(thumbUri).error(R.drawable.ic_av_movie).into(iconThumb);
+        Picasso.with(context).load(thumbUri).error(R.drawable.ic_av_movie).into(viewHolder.iconThumb);
     }
 
 }

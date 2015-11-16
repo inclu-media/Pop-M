@@ -18,8 +18,14 @@ public class ReviewAdapter extends CursorAdapter {
 
     private static final String LOG_TAG = TrailerAdapter.class.getSimpleName();
 
-    @Bind(R.id.textView_review_author) TextView tvAuthor;
-    @Bind(R.id.textView_review_content) TextView tvContent;
+    public static class ViewHolder {
+        @Bind(R.id.textView_review_author) TextView tvAuthor;
+        @Bind(R.id.textView_review_content) TextView tvContent;
+
+        public ViewHolder(View view) {
+            ButterKnife.bind(this, view);
+        }
+    }
 
     public ReviewAdapter(Context context, Cursor c, int flags) {
         super(context, c, flags);
@@ -28,15 +34,19 @@ public class ReviewAdapter extends CursorAdapter {
     @Override
     public View newView(Context context, Cursor cursor, ViewGroup parent) {
         View view = LayoutInflater.from(context).inflate(R.layout.view_movie_review, parent, false);
+
+        ViewHolder viewHolder = new ViewHolder(view);
+        view.setTag(viewHolder);
+
         return view;
     }
 
     @Override
     public void bindView(View view, Context context, Cursor cursor) {
-        ButterKnife.bind(this, view);
+        ViewHolder viewHolder = (ViewHolder) view.getTag();
 
-        tvAuthor.setText(cursor.getString(MovieDetailActivityFragment.COL_REVIEW_AUTHOR));
-        tvContent.setText(cursor.getString(MovieDetailActivityFragment.COL_REVIEW_CONTENT));
+        viewHolder.tvAuthor.setText(cursor.getString(MovieDetailActivityFragment.COL_REVIEW_AUTHOR));
+        viewHolder.tvContent.setText(cursor.getString(MovieDetailActivityFragment.COL_REVIEW_CONTENT));
 
     }
 }
