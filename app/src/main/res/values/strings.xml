@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:xliff="http://schemas.android.com/apk/res-auto">
     <string name="app_name">Pop-M</string>
     <string name="action_settings">Settings</string>
     <string name="title_activity_movie_detail">Details</string>
@@ -13,8 +13,7 @@
     <string name="popm_movie_popular">Most Popular Movies</string>
     <string name="popm_movie_hirated">Highest Rated Movies</string>
     <string name="popm_movie_favourite">My Favourite Movies</string>
-    <string name="popm_share_discover">I\'ve just discovered the movie</string>
-    <string name="popm_share_popm">on POP-M</string>
-    <string name="popm_share_trailer">Check out the trailer</string>
+    <string name="popm_share_discover">I\'ve just discovered the movie \"<xliff:g name="title">%1$s</xliff:g>\" on POP-M.</string>
+    <string name="popm_share_trailer">Check out the trailer: <xliff:g name="url">%1$s</xliff:g></string>
     <string name="popm_msg_noin">No Internet connection</string>
 </resources>

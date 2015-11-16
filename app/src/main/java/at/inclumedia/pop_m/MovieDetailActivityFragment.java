@@ -292,10 +292,9 @@ public class MovieDetailActivityFragment extends Fragment implements LoaderManag
     }
 
     private void setShareIntent() {
-        String msg  = getString(R.string.popm_share_discover) +" \"";
-               msg += mTitle +"\" "+  getString(R.string.popm_share_popm) + ".";
+        String msg  = getString(R.string.popm_share_discover, mTitle);
         if (mYouTubeUrl != null) {
-            msg += " " + getString(R.string.popm_share_trailer) +": "+ mYouTubeUrl;
+            msg += " " + getString(R.string.popm_share_trailer, mYouTubeUrl);
         }
 
         Intent intent = new Intent();
