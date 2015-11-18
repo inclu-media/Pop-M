@@ -27,6 +27,7 @@ import android.widget.GridView;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.support.v4.content.CursorLoader;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -41,9 +42,10 @@ import butterknife.OnItemClick;
 public class MovieGridActivityFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>, SwipeRefreshLayout.OnRefreshListener {
 
     private static final String LOG_TAG = MovieGridActivityFragment.class.getSimpleName();
-    private static final int SHOW_POPULAR = 0;
-    private static final int SHOW_HIRATED = 1;
-    private static final int SHOW_FAVOURITE = 2;
+
+    static final int SHOW_POPULAR = 0;
+    static final int SHOW_HIRATED = 1;
+    static final int SHOW_FAVOURITE = 2;
     private int currentlyShown = SHOW_POPULAR;
 
     // loaders
@@ -54,12 +56,18 @@ public class MovieGridActivityFragment extends Fragment implements LoaderManager
     private MovieAdapter mMoviesAdapter;
 
     // projection
-    private static final String[] MOVIE_COLUMNS = {
+    static final String[] MOVIE_COLUMNS = {
             MovieColumns._ID,
-            MovieColumns.THUMB_URL
+            MovieColumns.THUMB_URL,
+            MovieColumns.TITLE
     };
     static final int COL_MOVIE_ID = 0;
     static final int COL_MOVIE_THUMBURI = 1;
+    static final int COL_MOVIE_TITLE = 2;
+
+    public interface Callback {
+        public void onItemSelected(Uri movieUri);
+    }
 
     @Bind(R.id.movie_grid_refresh_layout) SwipeRefreshLayout srlGrid;
     @Bind(R.id.movies_grid_view) GridView movieGridView;
@@ -68,17 +76,14 @@ public class MovieGridActivityFragment extends Fragment implements LoaderManager
     public void onItemClick(AdapterView<?> adapterView, View view, int pos, long l) {
         Cursor cursor = (Cursor) adapterView.getItemAtPosition(pos);
         if (cursor != null) {
-
             // trailers and reviews for that movie
             int movieId = cursor.getInt(COL_MOVIE_ID);
             MovieStoreManager msm = MovieStoreManager.getInstance(getContext());
             msm.updateTrailersForMovie(movieId);
             msm.updateReviewsForMovie(movieId);
 
-            // create intent
-            Intent detailIntent = new Intent(getActivity(), MovieDetailActivity.class);
-            detailIntent.setData(MovieProvider.Movies.withId(movieId));
-            startActivity(detailIntent);
+            // notify the callback
+            ((Callback)getActivity()).onItemSelected(MovieProvider.Movies.withId(movieId));
         }
     }
 
@@ -95,6 +100,11 @@ public class MovieGridActivityFragment extends Fragment implements LoaderManager
                                 value,
                                 null,
                                 MovieGridActivityFragment.this);
+                    }
+
+                    RelativeLayout rlDetail = (RelativeLayout)getActivity().findViewById(R.id.relativeLayout_detail);
+                    if (rlDetail != null) {
+                        rlDetail.setVisibility(View.INVISIBLE);
                     }
                 }
             };
@@ -116,6 +126,8 @@ public class MovieGridActivityFragment extends Fragment implements LoaderManager
         PreferenceManager.getDefaultSharedPreferences(getActivity().getApplicationContext())
                          .unregisterOnSharedPreferenceChangeListener(sortOrderListener);
     }
+
+
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {

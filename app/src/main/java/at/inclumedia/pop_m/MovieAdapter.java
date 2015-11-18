@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CursorAdapter;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 
@@ -21,7 +22,8 @@ import butterknife.ButterKnife;
 public class MovieAdapter extends CursorAdapter {
 
     public static class ViewHolder {
-        @Bind(R.id.view_movie_image) ImageView iconThumb;
+        @Bind(R.id.view_movie_thumb) ImageView iconThumb;
+        @Bind(R.id.textView_movie_caption) TextView tvCaption;
 
         public ViewHolder(View view) {
             ButterKnife.bind(this, view);
@@ -48,6 +50,9 @@ public class MovieAdapter extends CursorAdapter {
 
         Uri thumbUri = Uri.parse(cursor.getString(MovieGridActivityFragment.COL_MOVIE_THUMBURI));
         Picasso.with(context).load(thumbUri).error(R.drawable.ic_av_movie).into(viewHolder.iconThumb);
+
+        String caption = cursor.getString(MovieGridActivityFragment.COL_MOVIE_TITLE);
+        viewHolder.tvCaption.setText(caption);
     }
 
 }

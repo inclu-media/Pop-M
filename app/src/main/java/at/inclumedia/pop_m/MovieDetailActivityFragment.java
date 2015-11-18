@@ -2,8 +2,10 @@ package at.inclumedia.pop_m;
 
 import android.content.ContentValues;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.support.v4.app.LoaderManager;
@@ -19,6 +21,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -39,7 +42,9 @@ import com.github.clans.fab.FloatingActionButton;
 public class MovieDetailActivityFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
 
     private static final String LOG_TAG = MovieDetailActivityFragment.class.getSimpleName();
+    public static final String DETAIL_URI = "URI";
 
+    private Uri mUri;
     private int mMovieId = -1;
     private TrailerAdapter mTrailerAdapter;
     private ReviewAdapter mReviewAdapter;
@@ -63,6 +68,7 @@ public class MovieDetailActivityFragment extends Fragment implements LoaderManag
             MovieColumns.PLOT,
             MovieColumns.IS_FAVOURITE
     };
+    static final int COL_MOVIE_ID = 0;
     static final int COL_MOVIE_TITLE = 1;
     static final int COL_MOVIE_RELDATE = 2;
     static final int COL_MOVIE_RATING = 3;
@@ -100,6 +106,7 @@ public class MovieDetailActivityFragment extends Fragment implements LoaderManag
     @Bind(R.id.textView_reviews_heading) TextView tvReviewHeading;
     @Bind(R.id.view_trailer_divider) View vTrailerDivider;
     @Bind(R.id.view_review_divider) View vReviewDivider;
+    @Bind(R.id.relativeLayout_detail) RelativeLayout rlDetails;
 
     public MovieDetailActivityFragment() {
     }
@@ -146,13 +153,12 @@ public class MovieDetailActivityFragment extends Fragment implements LoaderManag
     public Loader<Cursor> onCreateLoader(int i, Bundle bundle) {
 
         CursorLoader cl = null;
-        Intent intent = getActivity().getIntent();
-        if (intent == null) {
+        Uri providerUri = mUri;
+        if (providerUri == null) {
             return null;
         }
         switch(i) {
             case DATA_LOADER:
-                Uri providerUri = intent.getData();
                 mMovieId = Integer.parseInt(providerUri.getLastPathSegment());
                 cl = new CursorLoader(
                         getActivity(),
@@ -189,6 +195,8 @@ public class MovieDetailActivityFragment extends Fragment implements LoaderManag
         switch (cursorLoader.getId()) {
             case DATA_LOADER:
                 if (cursor.moveToFirst()) {
+
+                    rlDetails.setVisibility(View.VISIBLE);
 
                     // plus or minus fav button
                     if (cursor.getInt(COL_MOVIE_ISFAVOURITE) == 1) {
@@ -262,6 +270,12 @@ public class MovieDetailActivityFragment extends Fragment implements LoaderManag
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_movie_detail, container, false);
         ButterKnife.bind(this, rootView);
+
+        // two column layout
+        Bundle arguments = getArguments();
+        if (arguments != null) {
+            mUri = arguments.getParcelable(DETAIL_URI);
+        }
 
         // enable menu
         setHasOptionsMenu(true);
