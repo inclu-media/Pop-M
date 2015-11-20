@@ -1,4 +1,4 @@
-UADN Assignment 1: Popular Movies (Pop-M)
+UADN Assignment 2: Popular Movies (Pop-M)
 =========================================
 
 TheMovieDB API Key
@@ -27,4 +27,16 @@ Additional Features Version 1
 Additional Features Version 2
 -----------------------------
 
-- ButterKnife
+- Movies, trailers and reviews are fetched via CursorLoaders from a ContentProvider which uses
+  SQLite for storing data.
+- Pull-to-refresh
+- Once the database has been initialised, the App works offline (no graphics in offline-mode though)
+  Thus not only favourite movies are stored in the database but all movies which were available when
+  the movie list was refreshed for the last time.
+
+Features planned in future releases
+-----------------------------------
+
+- Extend Picasso so that cached imaged are available in offline-mode
+- In tablet-view update the grid when a movie is removed from favourites in the detail fragment.
+- Fetch movie categories via the API

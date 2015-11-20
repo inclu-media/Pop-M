@@ -11,14 +11,16 @@ public class Movie implements Parcelable {
 
     public String title;
     public Uri thumbUri;
+    public Uri backdropUri;
     public String plot;
     public double rating;
     public String releaseDate;
     public int mdbId;
 
-    public Movie(String title, Uri thumbUri, String plot, double rating, String releaseDate, int mdbId) {
+    public Movie(String title, Uri thumbUri, Uri backdropUri, String plot, double rating, String releaseDate, int mdbId) {
         this.title = title;
         this.thumbUri = thumbUri;
+        this.backdropUri = backdropUri;
         this.plot = plot;
         this.rating = rating;
         this.releaseDate = releaseDate;
@@ -34,6 +36,7 @@ public class Movie implements Parcelable {
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(title);
         dest.writeString(thumbUri.toString());
+        dest.writeString(backdropUri.toString());
         dest.writeString(plot);
         dest.writeDouble(rating);
         dest.writeString(releaseDate);
@@ -54,6 +57,7 @@ public class Movie implements Parcelable {
     private Movie(Parcel in) {
         title       = in.readString();
         thumbUri    = Uri.parse(in.readString());
+        backdropUri = Uri.parse(in.readString());
         plot        = in.readString();
         rating      = in.readDouble();
         releaseDate = in.readString();

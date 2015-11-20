@@ -135,6 +135,7 @@ public class MovieStoreManager {
             cvMovie.put(MovieColumns.TITLE, theMovie.title);
             cvMovie.put(MovieColumns.RELEASE_DATE, theMovie.releaseDate);
             cvMovie.put(MovieColumns.THUMB_URL, theMovie.thumbUri.toString());
+            cvMovie.put(MovieColumns.BACKDROP_URL, theMovie.backdropUri.toString());
             cvMovie.put(MovieColumns.PLOT, theMovie.plot);
             cvMovie.put(MovieColumns.RATING, theMovie.rating);
 

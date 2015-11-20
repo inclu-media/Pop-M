@@ -101,7 +101,8 @@ public class API {
                 JSONObject objMovie = arResults.getJSONObject(i);
                 Movie movie = new Movie(
                         objMovie.getString(context.getString(R.string.tmdb_attrib_title)),
-                        getThumbUri(objMovie.getString(context.getString(R.string.tmdb_attrib_poster)), context),
+                        getThumbUri(objMovie.getString(context.getString(R.string.tmdb_attrib_poster)), context, false),
+                        getThumbUri(objMovie.getString(context.getString(R.string.tmdb_attrib_backdrop)), context, true),
                         objMovie.getString(context.getString(R.string.tmdb_attrib_overview)),
                         objMovie.getDouble(context.getString(R.string.tmdb_attrib_rating)),
                         objMovie.getString(context.getString(R.string.tmdb_attrib_date)),
@@ -155,12 +156,17 @@ public class API {
         return alReviews;
     }
 
-    private static Uri getThumbUri(String path, Context context) {
+    private static Uri getThumbUri(String path, Context context, boolean large) {
         Uri.Builder builder = new Uri.Builder();
         builder.scheme(context.getString(R.string.tmdb_schema))
-                .authority(context.getString(R.string.tmdb_host_image))
-                .appendEncodedPath(context.getString(R.string.tmdb_endpoint_image))
-                .appendEncodedPath(path);
+                .authority(context.getString(R.string.tmdb_host_image));
+        if (large) {
+            builder.appendEncodedPath(context.getString(R.string.tmdb_endpoint_image_large));
+        }
+        else {
+            builder.appendEncodedPath(context.getString(R.string.tmdb_endpoint_image));
+        }
+        builder.appendEncodedPath(path);
         return builder.build();
     }
 

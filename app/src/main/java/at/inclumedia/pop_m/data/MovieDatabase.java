@@ -1,10 +1,6 @@
 package at.inclumedia.pop_m.data;
 
-import android.content.Context;
-import android.database.sqlite.SQLiteDatabase;
-
 import net.simonvt.schematic.annotation.Database;
-import net.simonvt.schematic.annotation.OnUpgrade;
 import net.simonvt.schematic.annotation.Table;
 
 /**

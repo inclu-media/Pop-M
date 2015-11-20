@@ -19,52 +19,43 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="100dp"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:text="Large Text"
-            android:id="@+id/textView_title"
-            android:background="@color/colorAccent"
-            android:paddingLeft="15dp"
-            android:paddingTop="35dp"
-            android:textColor="@color/colorPrimaryDark"/>
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
 
-        <LinearLayout
-            android:orientation="horizontal"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingLeft="16dp"
-            android:paddingTop="20dp"
-            android:paddingRight="16dp"
-            android:paddingBottom="20dp">
+                <ImageView
+                    android:layout_width="fill_parent"
+                    android:layout_height="180dp"
+                    android:id="@+id/imageView_backdrop"
+                    android:background="@color/colorAccent"
+                    android:adjustViewBounds="true" />
 
-            <ImageView
-                android:layout_width="150dp"
-                android:layout_height="225dp"
-                android:id="@+id/imageView_thumb" />
+                <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:text="Large Text"
+                android:id="@+id/textView_title"
+                    android:textColor="#ffffff"
+                    android:padding="16dp"
+                    android:layout_alignParentBottom="true"
+                    android:background="@color/colorPrimaryDarkTrans" />
+            </RelativeLayout>
 
             <LinearLayout
                 android:orientation="vertical"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="16dp"
-                android:layout_marginRight="16dp"
-                android:layout_gravity="bottom">
+                android:layout_gravity="bottom"
+                android:layout_margin="16dp">
 
-                <TextView
+                <RatingBar
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textAppearance="?android:attr/textAppearanceMedium"
-                    android:text="Medium Text"
-                    android:id="@+id/textView_year" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textAppearance="?android:attr/textAppearanceSmall"
-                    android:text="Small Text"
-                    android:id="@+id/textView_rating" />
+                    android:id="@+id/ratingBar"
+                    android:stepSize="0.1"
+                    android:numStars="10"
+                    style="?android:attr/ratingBarStyleSmall" />
 
                 <TextView
                     android:layout_width="fill_parent"
@@ -75,9 +66,6 @@
                     android:layout_marginTop="16dp" />
 
             </LinearLayout>
-
-        </LinearLayout>
-
 
 
             <View
@@ -133,7 +121,7 @@
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
             android:layout_alignParentTop="true"
-            android:layout_marginTop="64dp">
+            android:layout_marginTop="145dp">
 
             <com.github.clans.fab.FloatingActionButton
                 android:id="@+id/fabPlus"
@@ -143,7 +131,7 @@
                 android:layout_marginBottom="8dp"
                 android:layout_marginRight="8dp"
                 android:src="@drawable/ic_plus"
-                fab:fab_colorNormal="@color/colorPrimary"/>
+                fab:fab_colorNormal="@color/colorAccentAlt"/>
 
             <com.github.clans.fab.FloatingActionButton
                 android:id="@+id/fabMinus"
@@ -153,7 +141,7 @@
                 android:layout_marginBottom="8dp"
                 android:layout_marginRight="8dp"
                 android:src="@drawable/ic_minus"
-                fab:fab_colorNormal="@color/colorPrimary"/>
+                fab:fab_colorNormal="@color/colorAccentAlt"/>
         </RelativeLayout>
     </RelativeLayout>
 

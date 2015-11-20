@@ -49,7 +49,7 @@ public class MovieAdapter extends CursorAdapter {
         ViewHolder viewHolder = (ViewHolder) view.getTag();
 
         Uri thumbUri = Uri.parse(cursor.getString(MovieGridActivityFragment.COL_MOVIE_THUMBURI));
-        Picasso.with(context).load(thumbUri).error(R.drawable.ic_av_movie).into(viewHolder.iconThumb);
+        Picasso.with(context).load(thumbUri).error(R.drawable.notfound).into(viewHolder.iconThumb);
 
         String caption = cursor.getString(MovieGridActivityFragment.COL_MOVIE_TITLE);
         viewHolder.tvCaption.setText(caption);

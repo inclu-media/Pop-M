@@ -6,6 +6,7 @@
     <string name="tmdb_version">3</string>
     <string name="tmdb_endpoint_discover">discover/movie</string>
     <string name="tmdb_endpoint_image">t/p/w500</string>
+    <string name="tmdb_endpoint_image_large">t/p/w1000</string>
     <string name="tmdb_sortby">sort_by</string>
     <string name="tmdb_sortby_popular">popularity.desc</string>
     <string name="tmdb_sortby_highrated">vote_average.desc</string>
@@ -13,6 +14,7 @@
     <string name="tmdb_attrib_results">results</string>
     <string name="tmdb_attrib_title">original_title</string>
     <string name="tmdb_attrib_poster">poster_path</string>
+    <string name="tmdb_attrib_backdrop">backdrop_path</string>
     <string name="tmdb_attrib_overview">overview</string>
     <string name="tmdb_attrib_rating">vote_average</string>
     <string name="tmdb_attrib_date">release_date</string>
